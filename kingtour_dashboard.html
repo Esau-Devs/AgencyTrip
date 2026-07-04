@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Principal - KingTour</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b2437;
+    --ink-soft:#5b6478;
+    --line:#e7e9ef;
+    --bg:#f3f4f8;
+    --panel:#ffffff;
+    --gold:#8a6a2c;
+    --gold-dark:#6b5220;
+    --gold-soft:#f4ead2;
+    --blue-soft:#e7edfb;
+    --blue:#3b5bdb;
+    --green-soft:#e3f6ec;
+    --green:#1f9d55;
+    --red:#e0384c;
+    --red-soft:#fde8ea;
+    --sidebar-w:248px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    display:flex;
+    min-height:100vh;
+  }
+  button{font-family:inherit;}
+  ::-webkit-scrollbar{width:8px;height:8px;}
+  ::-webkit-scrollbar-thumb{background:#d8d9e0;border-radius:8px;}
+
+  /* ---------- SIDEBAR ---------- */
+  .sidebar{
+    width:var(--sidebar-w);
+    background:var(--panel);
+    border-right:1px solid var(--line);
+    display:flex;
+    flex-direction:column;
+    padding:24px 16px;
+    position:sticky;
+    top:0;
+    height:100vh;
+    z-index:20;
+  }
+  .brand{display:flex;align-items:center;gap:12px;padding:0 8px 24px 8px;}
+  .brand-mark{
+    width:38px;height:38px;border-radius:10px;
+    background:linear-gradient(135deg,#c9a25a,#7d5c22);
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;
+  }
+  .brand-text h1{font-family:'Poppins',sans-serif;font-size:16px;margin:0;color:var(--gold-dark);}
+  .brand-text span{font-size:11px;color:var(--ink-soft);}
+  .new-booking{
+    background:var(--gold-dark);color:#fff;border:none;border-radius:10px;padding:14px;
+    font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px;
+    cursor:pointer;margin:8px 0 20px 0;transition:background .15s;
+  }
+  .new-booking:hover{background:#5a4419;}
+  nav.main-nav{display:flex;flex-direction:column;gap:2px;flex:1;overflow-y:auto;}
+  .nav-item{
+    display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:9px;
+    color:var(--ink-soft);text-decoration:none;font-size:14px;font-weight:500;cursor:pointer;
+    border:none;background:none;width:100%;text-align:left;position:relative;
+  }
+  .nav-item svg{width:18px;height:18px;flex-shrink:0;}
+  .nav-item:hover{background:#f5f3ee;color:var(--ink);}
+  .nav-item.active{background:var(--gold-soft);color:var(--gold-dark);font-weight:600;}
+  .nav-badge{
+    margin-left:auto;background:var(--red);color:#fff;font-size:10.5px;font-weight:700;
+    border-radius:20px;padding:1px 7px;
+  }
+  .sidebar-bottom{display:flex;flex-direction:column;gap:2px;border-top:1px solid var(--line);padding-top:10px;}
+
+  /* ---------- MAIN ---------- */
+  .main{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .topbar{
+    display:flex;align-items:center;gap:24px;padding:14px 32px;background:var(--panel);
+    border-bottom:1px solid var(--line);position:sticky;top:0;z-index:15;
+  }
+  .topbar .logo-mini{font-weight:700;font-family:'Poppins',sans-serif;color:var(--gold-dark);font-size:15px;white-space:nowrap;}
+  .search-wrap{position:relative;flex:1;max-width:420px;}
+  .search{
+    display:flex;align-items:center;gap:8px;background:var(--bg);border-radius:10px;padding:9px 14px;
+    color:var(--ink-soft);font-size:13px;border:1px solid transparent;
+  }
+  .search:focus-within{border-color:var(--gold-dark);background:#fff;}
+  .search svg{width:16px;height:16px;flex-shrink:0;}
+  .search input{border:none;background:none;outline:none;font-size:13px;width:100%;color:var(--ink);font-family:inherit;}
+  .search-results{
+    position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid var(--line);
+    border-radius:10px;box-shadow:0 12px 30px rgba(20,20,30,.12);padding:8px;display:none;max-height:280px;overflow-y:auto;z-index:30;
+  }
+  .search-results.show{display:block;}
+  .search-result-item{padding:9px 10px;border-radius:7px;font-size:13px;cursor:pointer;display:flex;justify-content:space-between;gap:10px;}
+  .search-result-item:hover{background:var(--bg);}
+  .search-result-item small{color:var(--ink-soft);}
+  .search-empty{padding:14px 10px;font-size:12.5px;color:var(--ink-soft);text-align:center;}
+
+  .tabs{display:flex;gap:20px;font-size:13px;}
+  .tabs button{padding-bottom:14px;cursor:pointer;color:var(--ink-soft);border:none;background:none;font-size:13px;border-bottom:2px solid transparent;margin-top:14px;}
+  .tabs button.active{color:var(--gold-dark);font-weight:600;border-bottom:2px solid var(--gold-dark);}
+  .topbar-actions{margin-left:auto;display:flex;align-items:center;gap:16px;position:relative;}
+  .btn-primary{
+    background:var(--gold-dark);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;
+    font-weight:600;cursor:pointer;white-space:nowrap;
+  }
+  .btn-primary:hover{background:#5a4419;}
+  .icon-btn{
+    width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    background:var(--bg);color:var(--ink-soft);cursor:pointer;border:none;position:relative;flex-shrink:0;
+  }
+  .icon-btn:hover{background:#e9eaf0;color:var(--ink);}
+  .notif-dot{position:absolute;top:6px;right:7px;width:8px;height:8px;border-radius:50%;background:var(--red);border:2px solid #fff;}
+  .avatar{
+    width:36px;height:36px;border-radius:50%;background:#eee;border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;color:var(--ink-soft);cursor:pointer;flex-shrink:0;
+  }
+
+  /* generic dropdown */
+  .dropdown{
+    position:absolute;top:calc(100% + 10px);right:0;background:#fff;border:1px solid var(--line);
+    border-radius:12px;box-shadow:0 16px 36px rgba(20,20,30,.14);width:300px;display:none;overflow:hidden;z-index:40;
+  }
+  .dropdown.show{display:block;}
+  .dropdown-head{padding:14px 16px;border-bottom:1px solid var(--line);font-weight:700;font-size:13.5px;display:flex;justify-content:space-between;align-items:center;}
+  .dropdown-head span.count{font-weight:400;color:var(--ink-soft);font-size:12px;}
+  .dropdown-list{max-height:320px;overflow-y:auto;}
+  .dropdown-item{padding:12px 16px;border-bottom:1px solid #f2f2f5;font-size:12.5px;cursor:pointer;display:flex;gap:10px;}
+  .dropdown-item:last-child{border-bottom:none;}
+  .dropdown-item:hover{background:var(--bg);}
+  .dropdown-item .dot{width:8px;height:8px;border-radius:50%;background:var(--blue);margin-top:5px;flex-shrink:0;}
+  .dropdown-item.read .dot{background:transparent;}
+  .dropdown-item p{margin:0;}
+  .dropdown-item .t{font-weight:600;color:var(--ink);margin-bottom:2px;}
+  .dropdown-item .s{color:var(--ink-soft);}
+  .dropdown-foot{padding:10px;text-align:center;border-top:1px solid var(--line);}
+  .dropdown-foot a{font-size:12.5px;font-weight:600;color:var(--gold-dark);cursor:pointer;}
+  .apps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:14px;width:220px;}
+  .apps-grid .app{
+    display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px;border-radius:10px;cursor:pointer;font-size:11px;color:var(--ink-soft);text-align:center;
+  }
+  .apps-grid .app:hover{background:var(--bg);color:var(--ink);}
+  .apps-grid .app .ic{width:34px;height:34px;border-radius:9px;background:var(--gold-soft);color:var(--gold-dark);display:flex;align-items:center;justify-content:center;}
+  .avatar-menu{width:220px;}
+  .avatar-menu .who{padding:14px 16px;border-bottom:1px solid var(--line);}
+  .avatar-menu .who .name{font-weight:700;font-size:13.5px;}
+  .avatar-menu .who .mail{font-size:12px;color:var(--ink-soft);}
+  .avatar-menu .item{padding:11px 16px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:10px;color:var(--ink);}
+  .avatar-menu .item:hover{background:var(--bg);}
+  .avatar-menu .item.danger{color:var(--red);}
+  .avatar-menu .item svg{width:15px;height:15px;}
+
+  .date-dropdown{width:180px;}
+  .date-dropdown .item{padding:10px 14px;font-size:13px;cursor:pointer;}
+  .date-dropdown .item:hover{background:var(--bg);}
+  .date-dropdown .item.active{color:var(--gold-dark);font-weight:700;background:var(--gold-soft);}
+
+  .content{padding:28px 32px 48px;}
+  .content h2.title{font-family:'Poppins',sans-serif;font-size:30px;margin:0 0 4px 0;}
+  .content .subtitle{color:var(--ink-soft);font-size:14px;margin:0;}
+  .overview-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+  .overview-actions{display:flex;gap:10px;position:relative;}
+  .btn-outline{
+    background:#fff;border:1px solid var(--line);border-radius:8px;padding:9px 14px;font-size:13px;font-weight:600;
+    color:var(--ink);display:flex;align-items:center;gap:6px;cursor:pointer;position:relative;
+  }
+  .btn-outline:hover{border-color:#c9ccd6;}
+
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:22px;}
+  .kpi-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;cursor:pointer;transition:transform .15s,box-shadow .15s;}
+  .kpi-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(20,20,30,.06);}
+  .kpi-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+  .kpi-label{font-size:13px;color:var(--ink-soft);}
+  .kpi-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;}
+  .kpi-icon.blue{background:var(--blue-soft);color:var(--blue);}
+  .kpi-icon.green{background:var(--green-soft);color:var(--green);}
+  .kpi-value{font-family:'Poppins',sans-serif;font-size:26px;font-weight:700;margin-bottom:6px;}
+  .kpi-delta{font-size:12.5px;display:flex;align-items:center;gap:5px;}
+  .kpi-delta.up{color:var(--green);}
+  .kpi-delta.down{color:var(--red);}
+  .kpi-delta .muted{color:var(--ink-soft);font-weight:400;}
+
+  .row2{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px;align-items:stretch;}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;}
+  .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;position:relative;}
+  .panel-head h3{font-size:16px;margin:0;font-family:'Poppins',sans-serif;}
+  .link{color:var(--gold-dark);font-size:12.5px;font-weight:600;text-decoration:none;cursor:pointer;background:none;border:none;}
+
+  .chart{display:flex;align-items:flex-end;gap:0;height:260px;position:relative;padding-left:40px;}
+  .chart .gridlines{position:absolute;left:40px;right:0;top:0;bottom:24px;display:flex;flex-direction:column;justify-content:space-between;}
+  .chart .gridlines div{border-top:1px dashed #edeef2;height:0;}
+  .yaxis{position:absolute;left:0;top:0;bottom:24px;display:flex;flex-direction:column;justify-content:space-between;font-size:11px;color:var(--ink-soft);}
+  .bars{display:flex;align-items:flex-end;gap:20px;flex:1;height:100%;padding-bottom:24px;z-index:1;}
+  .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:8px;cursor:pointer;}
+  .bar{width:56%;border-radius:6px 6px 0 0;background:#cfe0fb;transition:transform .15s,background .15s;}
+  .bar.active{background:var(--gold-dark);}
+  .bar-col:hover .bar{transform:scaleY(1.03);background:#a9c4f5;}
+  .bar-col:hover .bar.active{background:#8a6a2c;}
+  .bar-label{font-size:12px;color:var(--ink-soft);}
+  .bar-label.active{color:var(--ink);font-weight:700;}
+  .bar-tooltip{
+    position:absolute;background:var(--ink);color:#fff;font-size:11.5px;padding:5px 9px;border-radius:6px;
+    transform:translate(-50%,-130%);white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .1s;z-index:5;
+  }
+  .bar-tooltip.show{opacity:1;}
+
+  .action-list{display:flex;flex-direction:column;gap:16px;}
+  .action-item{display:flex;gap:12px;}
+  .action-badge{width:36px;height:36px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .action-badge.warn{background:var(--red-soft);color:var(--red);}
+  .action-badge.info{background:var(--blue-soft);color:var(--blue);}
+  .action-title{font-size:14px;font-weight:700;margin:0 0 3px 0;}
+  .action-desc{font-size:12.5px;color:var(--ink-soft);margin:0 0 6px 0;line-height:1.4;}
+  .action-link{font-size:12.5px;font-weight:700;color:var(--gold-dark);cursor:pointer;background:none;border:none;padding:0;}
+  .divider{border:none;border-top:1px solid var(--line);margin:14px 0;}
+  .empty-state{font-size:13px;color:var(--ink-soft);text-align:center;padding:24px 0;}
+
+  .row3{display:grid;grid-template-columns:2fr 1fr;gap:18px;}
+  .segment{border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:14px;}
+  .segment:last-child{margin-bottom:0;}
+  .segment-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
+  .segment-flight{display:flex;gap:10px;}
+  .segment-flight svg{width:18px;height:18px;margin-top:3px;color:var(--ink);flex-shrink:0;}
+  .segment-code{font-weight:700;font-size:14.5px;}
+  .segment-meta{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  .tag{font-size:11px;font-weight:700;padding:5px 10px;border-radius:6px;white-space:nowrap;cursor:pointer;border:none;}
+  .tag.new{background:#eaf7ef;color:var(--green);border:1px solid #cdeedb;}
+  .tag.original{background:#fbf3e2;color:#a97b1e;border:1px solid #f0dcae;}
+  .segment-route{display:flex;align-items:center;gap:18px;}
+  .route-time{font-family:'Poppins',sans-serif;font-size:24px;font-weight:700;}
+  .route-code{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  .route-mid{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;}
+  .route-line{width:100%;height:1px;background:var(--line);position:relative;}
+  .route-dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+  .route-plane{color:var(--ink-soft);}
+  .route-duration{font-size:11px;background:var(--bg);padding:3px 8px;border-radius:6px;color:var(--ink-soft);}
+
+  .dest-panel{overflow:hidden;padding:0;}
+  .dest-head{padding:22px 22px 14px 22px;}
+  .dest-head h3{margin:0 0 3px 0;font-size:16px;font-family:'Poppins',sans-serif;}
+  .dest-head p{margin:0;font-size:12.5px;color:var(--ink-soft);}
+  .dest-image{
+    margin:0 18px 18px 18px;border-radius:12px;
+    background:linear-gradient(180deg, rgba(20,24,38,.25), rgba(20,24,38,.75)),
+      url('https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=1200&auto=format&fit=crop') center/cover;
+    padding:16px;display:flex;flex-direction:column;gap:14px;
+  }
+  .dest-row{display:flex;align-items:center;justify-content:space-between;color:#fff;font-size:13.5px;cursor:pointer;border-radius:8px;padding:4px 6px;transition:background .15s;}
+  .dest-row:hover{background:rgba(255,255,255,.12);}
+  .dest-row .rank{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;margin-right:10px;}
+  .dest-row .name-wrap{display:flex;align-items:center;}
+  .dest-row .country{font-weight:400;opacity:.75;font-size:12px;margin-left:4px;}
+  .dest-row .count{font-weight:700;}
+
+  .filter-menu{width:190px;right:0;}
+
+  /* placeholder pages */
+  .placeholder-page{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:60px 32px;text-align:center;}
+  .placeholder-page .ic{width:56px;height:56px;border-radius:16px;background:var(--gold-soft);color:var(--gold-dark);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+  .placeholder-page h3{font-family:'Poppins',sans-serif;font-size:20px;margin:0 0 8px;}
+  .placeholder-page p{color:var(--ink-soft);font-size:13.5px;margin:0 0 20px;}
+
+  /* MODAL */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(20,22,32,.5);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal{background:#fff;border-radius:16px;width:100%;max-width:460px;max-height:88vh;overflow-y:auto;box-shadow:0 30px 60px rgba(0,0,0,.25);}
+  .modal-head{display:flex;justify-content:space-between;align-items:center;padding:20px 22px;border-bottom:1px solid var(--line);}
+  .modal-head h3{margin:0;font-size:16px;font-family:'Poppins',sans-serif;}
+  .modal-close{width:30px;height:30px;border-radius:50%;border:none;background:var(--bg);cursor:pointer;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;}
+  .modal-body{padding:22px;}
+  .form-row{margin-bottom:14px;display:flex;flex-direction:column;gap:6px;}
+  .form-row label{font-size:12.5px;font-weight:600;color:var(--ink);}
+  .form-row input,.form-row select,.form-row textarea{
+    border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13.5px;font-family:inherit;outline:none;
+  }
+  .form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--gold-dark);}
+  .form-grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:16px 22px;border-top:1px solid var(--line);}
+  .btn-ghost{background:none;border:1px solid var(--line);border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;color:var(--ink);}
+  .modal-info-row{display:flex;justify-content:space-between;font-size:13px;padding:9px 0;border-bottom:1px solid #f2f2f5;}
+  .modal-info-row span:first-child{color:var(--ink-soft);}
+  .modal-info-row span:last-child{font-weight:600;}
+
+  /* TOAST */
+  .toast-wrap{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:10px;z-index:200;}
+  .toast{
+    background:var(--ink);color:#fff;padding:13px 18px;border-radius:10px;font-size:13px;display:flex;align-items:center;gap:10px;
+    box-shadow:0 10px 24px rgba(0,0,0,.2);animation:toastIn .2s ease;min-width:220px;
+  }
+  .toast.success svg{color:#5fe0a0;}
+  .toast.error svg{color:#ff8a95;}
+  @keyframes toastIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+  @media (max-width:1180px){
+    .kpi-grid{grid-template-columns:repeat(2,1fr);}
+    .row2, .row3{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-mark">✈</div>
+    <div class="brand-text">
+      <h1>KingTour</h1>
+      <span>Enterprise Travel ERP</span>
+    </div>
+  </div>
+
+  <button class="new-booking" onclick="openModal('modal-new-booking')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    New Booking
+  </button>
+
+  <nav class="main-nav" id="mainNav">
+    <button class="nav-item active" data-page="dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      Dashboard
+    </button>
+    <button class="nav-item" data-page="crm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      CRM
+    </button>
+    <button class="nav-item" data-page="reservations">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-1 .1-1.3.5l-.5.6c-.4.5-.3 1.2.2 1.6L9 13l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 4.5 6.3c.4.5 1.1.6 1.6.2l.6-.5c.4-.3.6-.8.5-1.3z"/></svg>
+      Reservations
+      <span class="nav-badge">142</span>
+    </button>
+    <button class="nav-item" data-page="itinerary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 20L3 17V4l6 3m0 13 6-3m-6 3V7m6 10 6 3V7l-6-3m0 13V4m0 3-6-3"/></svg>
+      Itinerary Builder
+    </button>
+    <button class="nav-item" data-page="client">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      Client Portal
+    </button>
+    <button class="nav-item" data-page="reports">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Reports
+    </button>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <button class="nav-item" onclick="openModal('modal-settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </button>
+    <button class="nav-item" onclick="openModal('modal-help')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 2-3 4"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Help Center
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="logo-mini">KingTour ERP</div>
+
+    <div class="search-wrap">
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="searchInput" type="text" placeholder="Global Search" oninput="doSearch(this.value)" onfocus="doSearch(this.value)">
+      </div>
+      <div class="search-results" id="searchResults"></div>
+    </div>
+
+    <div class="tabs">
+      <button class="active" id="tabRecent" onclick="switchTab('recent')">Recent</button>
+      <button id="tabFavorites" onclick="switchTab('favorites')">Favorites</button>
+    </div>
+
+    <div class="topbar-actions">
+      <button class="btn-primary" onclick="openModal('modal-itinerary')">Create Itinerary</button>
+
+      <button class="icon-btn" onclick="toggleDropdown('notifDropdown')" title="Notifications">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="notif-dot" id="notifDot"></span>
+      </button>
+      <div class="dropdown" id="notifDropdown">
+        <div class="dropdown-head">Notifications <span class="count" id="notifCount">3 new</span></div>
+        <div class="dropdown-list" id="notifList"></div>
+        <div class="dropdown-foot"><a onclick="markAllRead()">Mark all as read</a></div>
+      </div>
+
+      <button class="icon-btn" onclick="toggleDropdown('appsDropdown')" title="Apps">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      </button>
+      <div class="dropdown" id="appsDropdown" style="width:220px;">
+        <div class="apps-grid">
+          <div class="app" onclick="toast('Abriendo Flights…')"><div class="ic">✈</div>Flights</div>
+          <div class="app" onclick="toast('Abriendo Hotels…')"><div class="ic">🏨</div>Hotels</div>
+          <div class="app" onclick="toast('Abriendo Cars…')"><div class="ic">🚗</div>Cars</div>
+          <div class="app" onclick="toast('Abriendo Invoices…')"><div class="ic">🧾</div>Invoices</div>
+          <div class="app" onclick="toast('Abriendo Support…')"><div class="ic">🎧</div>Support</div>
+          <div class="app" onclick="toast('Abriendo Docs…')"><div class="ic">📄</div>Docs</div>
+        </div>
+      </div>
+
+      <button class="avatar" onclick="toggleDropdown('avatarDropdown')" title="Cuenta">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+      </button>
+      <div class="dropdown avatar-menu" id="avatarDropdown">
+        <div class="who">
+          <div class="name">Esaú Martínez</div>
+          <div class="mail">esau@kingtour.com</div>
+        </div>
+        <div class="item" onclick="openModal('modal-profile')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+          My Profile
+        </div>
+        <div class="item" onclick="openModal('modal-settings')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1"/></svg>
+          Settings
+        </div>
+        <div class="item danger" onclick="toast('Sesión cerrada','error')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Log Out
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content" id="contentArea">
+
+    <!-- ======= DASHBOARD PAGE ======= -->
+    <div id="page-dashboard">
+      <div class="overview-head">
+        <div>
+          <h2 class="title">Overview</h2>
+          <p class="subtitle">Welcome back. Here is your operational summary for today.</p>
+        </div>
+        <div class="overview-actions">
+          <button class="btn-outline" onclick="toggleDropdown('dateDropdown')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span id="dateRangeLabel">This Month</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="dropdown date-dropdown" id="dateDropdown" style="width:170px;">
+            <div class="item" onclick="setDateRange('Today')">Today</div>
+            <div class="item" onclick="setDateRange('This Week')">This Week</div>
+            <div class="item active" onclick="setDateRange('This Month')">This Month</div>
+            <div class="item" onclick="setDateRange('This Quarter')">This Quarter</div>
+            <div class="item" onclick="setDateRange('This Year')">This Year</div>
+          </div>
+          <button class="btn-outline" onclick="exportCSV()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI CARDS -->
+      <div class="kpi-grid">
+        <div class="kpi-card" onclick="openModal('modal-sales')">
+          <div class="kpi-top">
+            <span class="kpi-label">Total Sales</span>
+            <div class="kpi-icon blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+          </div>
+          <div class="kpi-value" id="kpiSales">$284,500</div>
+          <div class="kpi-delta up" id="kpiSalesDelta">↗ +12.5% <span class="muted">vs last month</span></div>
+        </div>
+
+        <div class="kpi-card" onclick="openModal('modal-commission')">
+          <div class="kpi-top">
+            <span class="kpi-label">Commission Est.</span>
+            <div class="kpi-icon blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          </div>
+          <div class="kpi-value" id="kpiCommission">$34,140</div>
+          <div class="kpi-delta up" id="kpiCommissionDelta">↗ +8.2% <span class="muted">vs last month</span></div>
+        </div>
+
+        <div class="kpi-card" onclick="switchPage('reservations')">
+          <div class="kpi-top">
+            <span class="kpi-label">Active Bookings</span>
+            <div class="kpi-icon blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></div>
+          </div>
+          <div class="kpi-value" id="kpiBookings">142</div>
+          <div class="kpi-delta down" id="kpiBookingsDelta">↘ -2.1% <span class="muted">vs last month</span></div>
+        </div>
+
+        <div class="kpi-card" onclick="toast('28 vuelos en los próximos 7 días — 12 requieren check-in')">
+          <div class="kpi-top">
+            <span class="kpi-label">Flights (Next 7D)</span>
+            <div class="kpi-icon green"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 19.5l19-7.5-19-7.5v6l13 1.5-13 1.5z"/></svg></div>
+          </div>
+          <div class="kpi-value" id="kpiFlights">28</div>
+          <div class="kpi-delta"><span class="muted">12 require check-in action</span></div>
+        </div>
+      </div>
+
+      <!-- ROW 2 -->
+      <div class="row2">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Revenue Performance</h3>
+            <button class="link" onclick="openModal('modal-report')">View Full Report</button>
+          </div>
+          <div class="chart" id="chartWrap">
+            <div class="yaxis"><span>$100k</span><span>$75k</span><span>$50k</span><span>$25k</span><span>$0</span></div>
+            <div class="gridlines"><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="bars" id="barsWrap"></div>
+            <div class="bar-tooltip" id="barTooltip"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h3>Action Required</h3></div>
+          <div class="action-list" id="actionList"></div>
+        </div>
+      </div>
+
+      <!-- ROW 3 -->
+      <div class="row3">
+        <div class="panel" style="padding-top:20px;">
+          <div class="panel-head">
+            <h3>Critical Upcoming Segments</h3>
+            <button class="icon-btn" style="background:none;" onclick="toggleDropdown('filterDropdown')">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            </button>
+            <div class="dropdown filter-menu" id="filterDropdown">
+              <div class="item" style="padding:10px 14px;cursor:pointer;" onclick="filterSegments('all')">All Segments</div>
+              <div class="item" style="padding:10px 14px;cursor:pointer;" onclick="filterSegments('flights')">Flights only</div>
+              <div class="item" style="padding:10px 14px;cursor:pointer;" onclick="filterSegments('changed')">Changed only</div>
+            </div>
+          </div>
+          <div id="segmentsList"></div>
+        </div>
+
+        <div class="panel dest-panel">
+          <div class="dest-head">
+            <h3>Top Destinations</h3>
+            <p>By booking volume (30d)</p>
+          </div>
+          <div class="dest-image" id="destList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======= OTHER PAGES (placeholders funcionales) ======= -->
+    <div id="page-other" style="display:none;">
+      <div class="overview-head">
+        <div>
+          <h2 class="title" id="otherTitle">CRM</h2>
+          <p class="subtitle" id="otherSubtitle">Gestión de clientes y contactos.</p>
+        </div>
+      </div>
+      <div class="placeholder-page">
+        <div class="ic" id="otherIcon">👥</div>
+        <h3 id="otherHeading">Sección en construcción</h3>
+        <p id="otherText">Esta vista se puede conectar a tu base de datos real (clientes, reservas, itinerarios, reportes).</p>
+        <button class="btn-primary" onclick="toast('Solicitud enviada al equipo de producto')">Solicitar acceso anticipado</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= MODALES ================= -->
+
+<div class="modal-overlay" id="modal-new-booking" onclick="closeOnOverlay(event,'modal-new-booking')">
+  <div class="modal">
+    <div class="modal-head"><h3>New Booking</h3><button class="modal-close" onclick="closeModal('modal-new-booking')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>Client Name</label><input type="text" placeholder="Ej. Smith Family"></div>
+      <div class="form-row"><label>Destination</label><input type="text" placeholder="Ej. Maldives"></div>
+      <div class="form-grid2">
+        <div class="form-row"><label>Check-in</label><input type="date"></div>
+        <div class="form-row"><label>Check-out</label><input type="date"></div>
+      </div>
+      <div class="form-row">
+        <label>Service Type</label>
+        <select><option>Vuelo</option><option>Hotel</option><option>Paquete completo</option><option>Traslado</option></select>
+      </div>
+      <div class="form-row"><label>Notes</label><textarea rows="3" placeholder="Detalles adicionales…"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-new-booking')">Cancel</button>
+      <button class="btn-primary" onclick="submitBooking()">Create Booking</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-itinerary" onclick="closeOnOverlay(event,'modal-itinerary')">
+  <div class="modal">
+    <div class="modal-head"><h3>Create Itinerary</h3><button class="modal-close" onclick="closeModal('modal-itinerary')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>Itinerary Name</label><input type="text" placeholder="Ej. Corporate Retreat #890"></div>
+      <div class="form-row"><label>Client / Group</label><input type="text" placeholder="Ej. Acme Corp"></div>
+      <div class="form-grid2">
+        <div class="form-row"><label>Start Date</label><input type="date"></div>
+        <div class="form-row"><label>End Date</label><input type="date"></div>
+      </div>
+      <div class="form-row">
+        <label>Template</label>
+        <select><option>En blanco</option><option>Corporativo</option><option>Luna de miel</option><option>Familiar</option></select>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-itinerary')">Cancel</button>
+      <button class="btn-primary" onclick="submitItinerary()">Build Itinerary</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-report" onclick="closeOnOverlay(event,'modal-report')">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-head"><h3>Revenue Performance — Full Report</h3><button class="modal-close" onclick="closeModal('modal-report')">✕</button></div>
+    <div class="modal-body" id="reportBody"></div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-report')">Close</button>
+      <button class="btn-primary" onclick="exportCSV()">Download CSV</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-invoice" onclick="closeOnOverlay(event,'modal-invoice')">
+  <div class="modal">
+    <div class="modal-head"><h3>Invoice — Smith Family Itinerary</h3><button class="modal-close" onclick="closeModal('modal-invoice')">✕</button></div>
+    <div class="modal-body">
+      <div class="modal-info-row"><span>Client</span><span>Smith Family</span></div>
+      <div class="modal-info-row"><span>Destination</span><span>Maldives</span></div>
+      <div class="modal-info-row"><span>Invoice #</span><span>INV-20481</span></div>
+      <div class="modal-info-row"><span>Due Date</span><span>28 Oct 2024 (overdue)</span></div>
+      <div class="modal-info-row"><span>Amount Due</span><span style="color:var(--red);">$4,250.00</span></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-invoice')">Close</button>
+      <button class="btn-primary" onclick="resolveAction('payment')">Mark as Paid</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-draft" onclick="closeOnOverlay(event,'modal-draft')">
+  <div class="modal">
+    <div class="modal-head"><h3>Corporate Retreat #889 — Draft</h3><button class="modal-close" onclick="closeModal('modal-draft')">✕</button></div>
+    <div class="modal-body">
+      <div class="modal-info-row"><span>Requested by</span><span>Ops Team</span></div>
+      <div class="modal-info-row"><span>Layout</span><span>Custom, 3 days</span></div>
+      <div class="modal-info-row"><span>Status</span><span style="color:var(--blue);">Pending manager approval</span></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-draft')">Close</button>
+      <button class="btn-primary" onclick="resolveAction('approval')">Approve</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-flightdiff" onclick="closeOnOverlay(event,'modal-flightdiff')">
+  <div class="modal">
+    <div class="modal-head"><h3>Flight Change — AV530</h3><button class="modal-close" onclick="closeModal('modal-flightdiff')">✕</button></div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--ink-soft);margin-top:0;">Comparación entre el vuelo original y el nuevo vuelo asignado.</p>
+      <div class="modal-info-row"><span>Original</span><span>SAL 17:35 → ONT 21:00</span></div>
+      <div class="modal-info-row"><span>Nuevo</span><span>SAL 17:35 → ONT 21:00</span></div>
+      <div class="modal-info-row"><span>Operado por</span><span>TACA International Airline</span></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-flightdiff')">Close</button>
+      <button class="btn-primary" onclick="toast('Cliente notificado del cambio')">Notify Client</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-sales" onclick="closeOnOverlay(event,'modal-sales')">
+  <div class="modal">
+    <div class="modal-head"><h3>Total Sales Breakdown</h3><button class="modal-close" onclick="closeModal('modal-sales')">✕</button></div>
+    <div class="modal-body">
+      <div class="modal-info-row"><span>Flights</span><span>$142,300</span></div>
+      <div class="modal-info-row"><span>Hotels</span><span>$98,400</span></div>
+      <div class="modal-info-row"><span>Packages</span><span>$31,200</span></div>
+      <div class="modal-info-row"><span>Transfers</span><span>$12,600</span></div>
+      <div class="modal-info-row" style="border-bottom:none;"><span><b>Total</b></span><span><b id="salesBreakdownTotal">$284,500</b></span></div>
+    </div>
+    <div class="modal-foot"><button class="btn-primary" onclick="closeModal('modal-sales')">Close</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-commission" onclick="closeOnOverlay(event,'modal-commission')">
+  <div class="modal">
+    <div class="modal-head"><h3>Commission Estimate</h3><button class="modal-close" onclick="closeModal('modal-commission')">✕</button></div>
+    <div class="modal-body">
+      <div class="modal-info-row"><span>Average commission rate</span><span>12%</span></div>
+      <div class="modal-info-row"><span>Paid out</span><span>$21,900</span></div>
+      <div class="modal-info-row"><span>Pending payout</span><span>$12,240</span></div>
+    </div>
+    <div class="modal-foot"><button class="btn-primary" onclick="closeModal('modal-commission')">Close</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-profile" onclick="closeOnOverlay(event,'modal-profile')">
+  <div class="modal">
+    <div class="modal-head"><h3>My Profile</h3><button class="modal-close" onclick="closeModal('modal-profile')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>Full Name</label><input type="text" value="Esaú Martínez"></div>
+      <div class="form-row"><label>Email</label><input type="text" value="esau@kingtour.com"></div>
+      <div class="form-row"><label>Role</label><input type="text" value="Travel Agent / Admin" disabled></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-profile')">Cancel</button>
+      <button class="btn-primary" onclick="toast('Perfil actualizado');closeModal('modal-profile')">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-settings" onclick="closeOnOverlay(event,'modal-settings')">
+  <div class="modal">
+    <div class="modal-head"><h3>Settings</h3><button class="modal-close" onclick="closeModal('modal-settings')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>Currency</label><select><option>USD</option><option>EUR</option><option>GTQ</option></select></div>
+      <div class="form-row"><label>Language</label><select><option>Español</option><option>English</option></select></div>
+      <div class="form-row"><label>Notifications</label><select><option>All</option><option>Important only</option><option>None</option></select></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-settings')">Cancel</button>
+      <button class="btn-primary" onclick="toast('Preferencias guardadas');closeModal('modal-settings')">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-help" onclick="closeOnOverlay(event,'modal-help')">
+  <div class="modal">
+    <div class="modal-head"><h3>Help Center</h3><button class="modal-close" onclick="closeModal('modal-help')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>¿Cómo podemos ayudarte?</label><textarea rows="4" placeholder="Describe tu problema o duda…"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-help')">Cancel</button>
+      <button class="btn-primary" onclick="toast('Ticket de soporte enviado');closeModal('modal-help')">Send Ticket</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ---------------- DATA ---------------- */
+const dateData = {
+  'Today':        {sales:12800, commission:1536, bookings:9,   salesDelta:'+3.1%', commDelta:'+2.0%', bookDelta:'+1.0%', bars:[20,40,30,55,80,60,45]},
+  'This Week':    {sales:74200, commission:8904, bookings:41,  salesDelta:'+6.4%', commDelta:'+5.1%', bookDelta:'-0.8%', bars:[36,70,52,83,96,65,57]},
+  'This Month':   {sales:284500, commission:34140, bookings:142,salesDelta:'+12.5%', commDelta:'+8.2%', bookDelta:'-2.1%', bars:[36,70,52,83,96,65,57]},
+  'This Quarter': {sales:812300, commission:97476, bookings:398,salesDelta:'+9.7%', commDelta:'+7.4%', bookDelta:'+4.3%', bars:[55,62,70,88,92,78,66]},
+  'This Year':    {sales:3184200, commission:382104, bookings:1520,salesDelta:'+18.9%', commDelta:'+15.2%', bookDelta:'+11.1%', bars:[40,55,65,80,100,85,72]},
+};
+const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+let currentRange = 'This Month';
+
+let actions = [
+  {id:'payment', type:'warn', title:'Payment Overdue', desc:'Smith Family Itinerary to Maldives. Final payment of…', link:'Review Invoice', modal:'modal-invoice'},
+  {id:'approval', type:'info', title:'Pending Approval', desc:'Custom layout for Corporate Retreat #889 needs manager…', link:'View Draft', modal:'modal-draft'},
+];
+
+let notifications = [
+  {title:'New booking confirmed', desc:'Smith Family — Maldives package', read:false},
+  {title:'Flight AV530 changed', desc:'New departure time assigned', read:false},
+  {title:'Invoice overdue', desc:'INV-20481 is now 3 days overdue', read:false},
+  {title:'Itinerary approved', desc:'Corporate Retreat #872 approved by manager', read:true},
+];
+
+let segments = [
+  {code:'AV530', date:'sáb., 09 nov., 2024', op:'Operado por TACA International Airline', tag:'new', tagLabel:'Nuevo vuelo', from:'SAL', to:'ONT', dep:'17:35', arr:'21:00', dur:'05h 20m'},
+  {code:'AV530', date:'sáb., 09 nov., 2024', op:'Operado por TACA International Airline', tag:'original', tagLabel:'Vuelo original', from:'SAL', to:'ONT', dep:'17:35', arr:'21:00', dur:'05h 20m'},
+];
+
+let destinations = [
+  {rank:1, city:'Tokyo', country:'JP', bookings:24},
+  {rank:2, city:'Paris', country:'FR', bookings:18},
+  {rank:3, city:'Dubai', country:'AE', bookings:12},
+];
+
+const searchIndex = [
+  {label:'Smith Family Itinerary', hint:'Booking · Maldives', action:()=>openModal('modal-invoice')},
+  {label:'Corporate Retreat #889', hint:'Itinerary · Draft', action:()=>openModal('modal-draft')},
+  {label:'AV530 — SAL → ONT', hint:'Flight segment', action:()=>openModal('modal-flightdiff')},
+  {label:'Revenue Performance Report', hint:'Report', action:()=>openModal('modal-report')},
+  {label:'Tokyo, JP', hint:'Top destination', action:()=>toast('Tokyo: 24 bookings en los últimos 30 días')},
+  {label:'New Booking', hint:'Acción rápida', action:()=>openModal('modal-new-booking')},
+  {label:'Settings', hint:'Configuración', action:()=>openModal('modal-settings')},
+];
+
+/* ---------------- RENDER ---------------- */
+function fmt(n){ return '$' + n.toLocaleString('en-US'); }
+
+function renderKPIs(){
+  const d = dateData[currentRange];
+  document.getElementById('kpiSales').textContent = fmt(d.sales);
+  document.getElementById('kpiCommission').textContent = fmt(d.commission);
+  document.getElementById('kpiBookings').textContent = d.bookings;
+  document.getElementById('salesBreakdownTotal').textContent = fmt(d.sales);
+
+  const sEl = document.getElementById('kpiSalesDelta');
+  sEl.innerHTML = (d.salesDelta.startsWith('-')?'↘ ':'↗ ') + d.salesDelta + ' <span class="muted">vs last period</span>';
+  sEl.className = 'kpi-delta ' + (d.salesDelta.startsWith('-') ? 'down':'up');
+
+  const cEl = document.getElementById('kpiCommissionDelta');
+  cEl.innerHTML = (d.commDelta.startsWith('-')?'↘ ':'↗ ') + d.commDelta + ' <span class="muted">vs last period</span>';
+  cEl.className = 'kpi-delta ' + (d.commDelta.startsWith('-') ? 'down':'up');
+
+  const bEl = document.getElementById('kpiBookingsDelta');
+  bEl.innerHTML = (d.bookDelta.startsWith('-')?'↘ ':'↗ ') + d.bookDelta + ' <span class="muted">vs last period</span>';
+  bEl.className = 'kpi-delta ' + (d.bookDelta.startsWith('-') ? 'down':'up');
+}
+
+function renderChart(){
+  const d = dateData[currentRange];
+  const wrap = document.getElementById('barsWrap');
+  wrap.innerHTML = '';
+  const maxVal = Math.max(...d.bars);
+  const peakIdx = d.bars.indexOf(maxVal);
+  d.bars.forEach((val, i)=>{
+    const col = document.createElement('div');
+    col.className = 'bar-col';
+    const isActive = i === peakIdx;
+    col.innerHTML = `<div class="bar ${isActive?'active':''}" style="height:${val}%;"></div><span class="bar-label ${isActive?'active':''}">${days[i]}</span>`;
+    col.addEventListener('mousemove', (e)=>showBarTooltip(e, days[i], val));
+    col.addEventListener('mouseleave', hideBarTooltip);
+    col.addEventListener('click', ()=>toast(days[i]+': aprox. '+fmt(Math.round(val*1000))+' en ventas'));
+    wrap.appendChild(col);
+  });
+}
+function showBarTooltip(e, day, val){
+  const tip = document.getElementById('barTooltip');
+  const rect = document.getElementById('chartWrap').getBoundingClientRect();
+  tip.style.left = (e.clientX - rect.left) + 'px';
+  tip.style.top = (e.clientY - rect.top) + 'px';
+  tip.textContent = day + ': ~' + fmt(Math.round(val*1000));
+  tip.classList.add('show');
+}
+function hideBarTooltip(){ document.getElementById('barTooltip').classList.remove('show'); }
+
+function renderActions(){
+  const list = document.getElementById('actionList');
+  if(actions.length === 0){
+    list.innerHTML = '<div class="empty-state">No actions pending. All caught up! 🎉</div>';
+    return;
+  }
+  list.innerHTML = actions.map((a,i)=>`
+    <div class="action-item">
+      <div class="action-badge ${a.type}">
+        ${a.type==='warn' ? '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+                          : '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'}
+      </div>
+      <div>
+        <p class="action-title">${a.title}</p>
+        <p class="action-desc">${a.desc}</p>
+        <button class="action-link" onclick="openModal('${a.modal}')">${a.link}</button>
+      </div>
+    </div>
+    ${i < actions.length-1 ? '<hr class="divider">' : ''}
+  `).join('');
+}
+
+function renderSegments(filter='all'){
+  const list = document.getElementById('segmentsList');
+  let data = segments;
+  if(filter === 'changed') data = segments.filter(s=>s.tag==='new');
+  if(data.length === 0){ list.innerHTML = '<div class="empty-state">No segments match this filter.</div>'; return; }
+  list.innerHTML = data.map(s=>`
+    <div class="segment">
+      <div class="segment-top">
+        <div class="segment-flight">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 19.5l19-7.5-19-7.5v6l13 1.5-13 1.5z"/></svg>
+          <div>
+            <div class="segment-code">${s.code} <span style="font-weight:400;color:var(--ink-soft);font-size:12.5px;">${s.date}</span></div>
+            <div class="segment-meta">${s.op}</div>
+          </div>
+        </div>
+        <button class="tag ${s.tag}" onclick="openModal('modal-flightdiff')">${s.tagLabel}</button>
+      </div>
+      <div class="segment-route">
+        <div><div class="route-time">${s.dep}</div><div class="route-code">${s.from}</div></div>
+        <div class="route-mid">
+          <span class="route-duration">${s.dur}</span>
+          <div class="route-line">
+            <span class="route-dot" style="position:absolute;left:0;top:-3px;"></span>
+            <span class="route-plane" style="position:absolute;left:50%;top:-9px;transform:translateX(-50%);">✈</span>
+            <span class="route-dot" style="position:absolute;right:0;top:-3px;"></span>
+          </div>
+        </div>
+        <div style="text-align:right;"><div class="route-time">${s.arr}</div><div class="route-code">${s.to}</div></div>
+      </div>
+    </div>
+  `).join('');
+}
+function filterSegments(type){
+  renderSegments(type);
+  toggleDropdown('filterDropdown', true);
+  toast('Filtro aplicado: ' + (type==='all'?'Todos':type==='flights'?'Solo vuelos':'Solo cambiados'));
+}
+
+function renderDestinations(){
+  const wrap = document.getElementById('destList');
+  wrap.innerHTML = destinations.map(d=>`
+    <div class="dest-row" onclick="toast('${d.city}, ${d.country}: ${d.bookings} bookings en los últimos 30 días')">
+      <div class="name-wrap"><span class="rank">${d.rank}</span> ${d.city}, <span class="country">${d.country}</span></div>
+      <span class="count">${d.bookings} Bookings</span>
+    </div>
+  `).join('');
+}
+
+function renderNotifications(){
+  const list = document.getElementById('notifList');
+  list.innerHTML = notifications.map((n,i)=>`
+    <div class="dropdown-item ${n.read?'read':''}" onclick="readNotif(${i})">
+      <span class="dot"></span>
+      <p><span class="t">${n.title}</span><br><span class="s">${n.desc}</span></p>
+    </div>
+  `).join('');
+  const unread = notifications.filter(n=>!n.read).length;
+  document.getElementById('notifCount').textContent = unread + ' new';
+  document.getElementById('notifDot').style.display = unread > 0 ? 'block' : 'none';
+}
+function readNotif(i){ notifications[i].read = true; renderNotifications(); }
+function markAllRead(){ notifications.forEach(n=>n.read=true); renderNotifications(); toast('Todas las notificaciones marcadas como leídas'); }
+
+function renderReport(){
+  const d = dateData[currentRange];
+  const body = document.getElementById('reportBody');
+  const rows = days.map((day,i)=>`<div class="modal-info-row"><span>${day}</span><span>${fmt(Math.round(d.bars[i]*1000))}</span></div>`).join('');
+  body.innerHTML = `<p style="font-size:13px;color:var(--ink-soft);margin-top:0;">Rango: <b>${currentRange}</b></p>` + rows;
+}
+
+/* ---------------- INTERACTIONS ---------------- */
+function setDateRange(range){
+  currentRange = range;
+  document.getElementById('dateRangeLabel').textContent = range;
+  document.querySelectorAll('#dateDropdown .item').forEach(el=>el.classList.toggle('active', el.textContent===range));
+  renderKPIs();
+  renderChart();
+  toggleDropdown('dateDropdown', true);
+  toast('Rango actualizado: ' + range);
+}
+
+function exportCSV(){
+  const d = dateData[currentRange];
+  let csv = 'Day,Revenue\n';
+  days.forEach((day,i)=> csv += `${day},${Math.round(d.bars[i]*1000)}\n`);
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'kingtour_revenue_' + currentRange.replace(/\s+/g,'_') + '.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('CSV exportado correctamente', 'success');
+}
+
+function resolveAction(id){
+  actions = actions.filter(a=>a.id!==id);
+  renderActions();
+  closeModal(id==='payment' ? 'modal-invoice' : 'modal-draft');
+  toast(id==='payment' ? 'Pago marcado como recibido' : 'Itinerario aprobado', 'success');
+}
+
+function submitBooking(){
+  closeModal('modal-new-booking');
+  toast('Nueva reserva creada correctamente', 'success');
+}
+function submitItinerary(){
+  closeModal('modal-itinerary');
+  toast('Itinerario creado — abre el Itinerary Builder para editarlo', 'success');
+}
+
+function switchTab(tab){
+  document.getElementById('tabRecent').classList.toggle('active', tab==='recent');
+  document.getElementById('tabFavorites').classList.toggle('active', tab==='favorites');
+  toast(tab==='recent' ? 'Mostrando elementos recientes' : 'Mostrando favoritos');
+}
+
+const pageMeta = {
+  crm: {title:'CRM', subtitle:'Gestión de clientes y contactos.', icon:'👥', heading:'Client Relationship Management', text:'Aquí verías la lista completa de clientes, historial de contacto y oportunidades activas.'},
+  reservations: {title:'Reservations', subtitle:'Todas las reservas activas y pasadas.', icon:'🧳', heading:'142 Active Bookings', text:'Conecta esta vista a tu base de datos de reservas para listar cada una con estado, fechas y pagos.'},
+  itinerary: {title:'Itinerary Builder', subtitle:'Arma itinerarios personalizados por cliente.', icon:'🗺️', heading:'Itinerary Builder', text:'Editor drag-and-drop para construir itinerarios día por día con vuelos, hoteles y actividades.'},
+  client: {title:'Client Portal', subtitle:'Portal de autoservicio para tus clientes.', icon:'🌐', heading:'Client Portal', text:'Tus clientes podrían ver aquí su itinerario, documentos de viaje y pagos pendientes.'},
+  reports: {title:'Reports', subtitle:'Reportes financieros y operativos.', icon:'📊', heading:'Reports Center', text:'Genera reportes de ventas, comisiones y ocupación por agente, destino o periodo.'},
+};
+
+function switchPage(page){
+  document.querySelectorAll('#mainNav .nav-item').forEach(el=>el.classList.toggle('active', el.dataset.page===page));
+  if(page === 'dashboard'){
+    document.getElementById('page-dashboard').style.display = 'block';
+    document.getElementById('page-other').style.display = 'none';
+  } else {
+    document.getElementById('page-dashboard').style.display = 'none';
+    document.getElementById('page-other').style.display = 'block';
+    const m = pageMeta[page];
+    document.getElementById('otherTitle').textContent = m.title;
+    document.getElementById('otherSubtitle').textContent = m.subtitle;
+    document.getElementById('otherIcon').textContent = m.icon;
+    document.getElementById('otherHeading').textContent = m.heading;
+    document.getElementById('otherText').textContent = m.text;
+  }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+document.getElementById('mainNav').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.nav-item');
+  if(btn) switchPage(btn.dataset.page);
+});
+
+/* ---------------- SEARCH ---------------- */
+function doSearch(q){
+  const box = document.getElementById('searchResults');
+  q = q.trim().toLowerCase();
+  if(q === ''){ box.classList.remove('show'); return; }
+  const results = searchIndex.filter(r => r.label.toLowerCase().includes(q));
+  box.innerHTML = results.length
+    ? results.map((r,i)=>`<div class="search-result-item" onclick="runSearchResult(${searchIndex.indexOf(r)})"><span>${r.label}</span><small>${r.hint}</small></div>`).join('')
+    : '<div class="search-empty">Sin resultados para "'+q+'"</div>';
+  box.classList.add('show');
+}
+function runSearchResult(i){
+  searchIndex[i].action();
+  document.getElementById('searchResults').classList.remove('show');
+  document.getElementById('searchInput').value = '';
+}
+
+/* ---------------- MODALS / DROPDOWNS / TOASTS ---------------- */
+function openModal(id){
+  document.getElementById(id).classList.add('show');
+  if(id === 'modal-report') renderReport();
+  closeAllDropdowns();
+}
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+function closeOnOverlay(e, id){ if(e.target.id === id) closeModal(id); }
+
+function closeAllDropdowns(except){
+  document.querySelectorAll('.dropdown').forEach(d=>{ if(d.id !== except) d.classList.remove('show'); });
+}
+function toggleDropdown(id, forceClose){
+  const el = document.getElementById(id);
+  const willShow = forceClose ? false : !el.classList.contains('show');
+  closeAllDropdowns(id);
+  el.classList.toggle('show', willShow);
+}
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('.icon-btn') && !e.target.closest('.avatar') && !e.target.closest('.dropdown') && !e.target.closest('.btn-outline')){
+    closeAllDropdowns();
+  }
+  if(!e.target.closest('.search-wrap')){
+    document.getElementById('searchResults').classList.remove('show');
+  }
+});
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){
+    document.querySelectorAll('.modal-overlay.show').forEach(m=>m.classList.remove('show'));
+    closeAllDropdowns();
+  }
+});
+
+function toast(msg, type='info'){
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  const icon = type==='success'
+    ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
+    : type==='error'
+    ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
+    : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+  el.innerHTML = icon + '<span>' + msg + '</span>';
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(()=>el.remove(), 300); }, 3200);
+}
+
+/* ---------------- INIT ---------------- */
+renderKPIs();
+renderChart();
+renderActions();
+renderSegments();
+renderDestinations();
+renderNotifications();
+</script>
+</body>
+</html>
